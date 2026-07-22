@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState, useDeferredValue } from "react";
 import { Search, X } from "lucide-react";
-import type Fuse from "fuse.js";
 import type { Species, Stats, Filters } from "~/lib/types";
 import { EMPTY_FILTERS } from "~/lib/types";
 import { loadSpecies, loadStats } from "~/lib/data";
-import { initSearch, runQuery, applySelection, applyGenome } from "~/lib/search";
+import { buildIndex, runQuery, applySelection, applyGenome } from "~/lib/search";
 import { CATEGORY_LABEL, fmtInt } from "~/lib/format";
 import { GapMeter } from "~/components/GapMeter";
 import { Facets } from "~/components/Facets";
@@ -35,7 +34,6 @@ function countBy(list: Species[], key: (s: Species) => string): Map<string, numb
 export function ExplorePage() {
   const [species, setSpecies] = useState<Species[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
-  const [fuse, setFuse] = useState<Fuse<Species> | null>(null);
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [visible, setVisible] = useState(PAGE);
   const [selected, setSelected] = useState<Species | null>(null);
@@ -50,10 +48,14 @@ export function ExplorePage() {
     Promise.all([loadSpecies(), loadStats()]).then(([sp, st]) => {
       setSpecies(sp);
       setStats(st);
-      setFuse(initSearch(sp));
+      buildIndex(sp);
       setLoading(false);
+      const params = new URLSearchParams(window.location.search);
+      // Deep link: /?q=<text> pre-fills the search.
+      const q = params.get("q");
+      if (q) setFilters((f) => ({ ...f, query: q }));
       // Deep link: /?species=<gbifKey> opens that species' detail.
-      const wanted = new URLSearchParams(window.location.search).get("species");
+      const wanted = params.get("species");
       if (wanted) {
         const match = sp.find((s) => String(s.key) === wanted);
         if (match) setSelected(match);
@@ -62,8 +64,8 @@ export function ExplorePage() {
   }, []);
 
   const afterQuery = useMemo(
-    () => runQuery(species, fuse, dFilters.query),
-    [species, fuse, dFilters.query],
+    () => runQuery(species, dFilters.query),
+    [species, dFilters.query],
   );
 
   const selection = useMemo(() => applySelection(afterQuery, dFilters), [afterQuery, dFilters]);
