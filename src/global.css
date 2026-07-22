@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  /* Nature-forward, warm, professional. Light only. */
+  --color-bg: #f5f3ec;
+  --color-surface: #ffffff;
+  --color-surface-2: #fbfaf5;
+  --color-ink: #1b2620;
+  --color-ink-soft: #45504a;
+  --color-muted: #767f78;
+  --color-faint: #9aa199;
+  --color-line: #e5e1d6;
+  --color-line-strong: #d5d0c2;
+
+  --color-forest: #2f5a47;
+  --color-forest-deep: #21402f;
+  --color-moss: #6d8a5a;
+  --color-genome: #216f78;
+  --color-genome-soft: #e2eef0;
+  --color-sand: #b8901f;
+
+  /* IUCN status hues — muted, not alarming */
+  --color-cr: #9a2d27;
+  --color-en: #bd5f2b;
+  --color-vu: #b98a1c;
+  --color-nt: #7b8a3d;
+  --color-lc: #3f7a5a;
+  --color-dd: #8a8375;
+  --color-ex: #333330;
+  --color-ew: #5a4a58;
+  --color-ne: #9aa199;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-bg);
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+input,
+select,
+textarea {
+  font-size: 15px;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-forest) 22%, transparent);
+}
+
+/* Thin, natural scrollbar for the dense table */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
